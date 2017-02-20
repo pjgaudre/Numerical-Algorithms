@@ -6,7 +6,7 @@ Created on Sat Feb 11 16:18:38 2017
 @author: philippe
 """
 
-import numpy as np
+from numpy import exp,finfo,float64,e,Inf,log
 
 def Exp(x):
     ''' Returns the value of the exponential function e^x with e ≈ 2.71828...
@@ -34,7 +34,7 @@ def Exp(x):
         an = x**2
         bn = 6.0
         error = 2.0*x*an/B2
-        while abs(error) > np.finfo(np.float64).eps:
+        while abs(error) > finfo(np.float64).eps:
             Atemp = bn * A2 + an * A1
             Btemp = bn * B2 + an * B1
             error *= an*B1/Btemp
@@ -47,12 +47,29 @@ def Exp(x):
     else:
         return Exp(0.5*x)**2.0
 
-def Test_Exp():
-    x = np.linspace(-709,709,100000)
-    Error = np.array([ abs((Exp(y)-np.exp(y))/np.exp(y)) for y in x ])
-    if max(Error)<1e-12 and Exp(-800) == 0.0 and Exp(800) == np.Inf :
-        print("All test passed!")
+def Log(x):
+    if x<0:
+        print ("x must be a postive real number.")
+    elif x>finfo(float64).max:
+        return Inf
+    elif x < 1.0/finfo(float64).max:
+        return -Inf
+    elif x<1.0/e:
+        return Log(e*x)-1.0
+    elif 1.0/e<=x and x<e:
+        z = (x-1.0)/(x+1.0)
+        yold = z
+        ynew = z**2
+        for n in range(5):
+            z = ynew*(n+0.5)*z/(n+1.5)
+            yold += z
+        yold *= 2
+        z = x/exp(yold) - 1.0
+        ynew = yold + z
+        while abs(z) > 2*finfo(float64).eps:
+            yold = ynew
+            z = x/exp(yold) - 1.0
+            ynew = yold + z
+        return ynew
     else:
-        print("Test Failed")
-
-Test_Exp()
+        return -Log(1.0/x)
