@@ -71,7 +71,7 @@ def Log(x):
         yold = z
         ynew = z**2
         for n in xrange(5):
-            z = ynew*(n+0.5)*z/(n+1.5)
+            z *= ynew*(n+0.5)/(n+1.5)
             yold += z
         yold *= 2
         z = x/exp(yold) - 1.0
