@@ -6,7 +6,7 @@ Created on Sat Feb 11 16:18:38 2017
 @author: philippe
 """
 
-from numpy import exp,finfo,float64,e,Inf,log
+from numpy import exp,finfo,float64,e,Inf
 
 def Exp(x):
     ''' Returns the value of the exponential function e^x with e ≈ 2.71828...
