@@ -15,5 +15,4 @@ def Test_Log():
         print("All test passed!")
     else:
         print("Test Failed")
-
 Test_Log()
