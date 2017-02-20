@@ -21,7 +21,7 @@ def Exp(x):
     for up to 12 correct digits.
     '''
     if x > 709.78271289338397:
-        return np.Inf
+        return Inf
     elif x < -709.78271289338397:
         return 0.0
     elif x<0.0:
@@ -34,7 +34,8 @@ def Exp(x):
         an = x**2
         bn = 6.0
         error = 2.0*x*an/B2
-        while abs(error) > finfo(np.float64).eps:
+        numItr = 1
+        while abs(error) > finfo(np.float64).eps and numItr <= 500:
             Atemp = bn * A2 + an * A1
             Btemp = bn * B2 + an * B1
             error *= an*B1/Btemp
@@ -43,11 +44,20 @@ def Exp(x):
             B1 = B2
             B2 = Btemp
             bn += 4.0
+            numItr += 1
         return A2/B2
     else:
         return Exp(0.5*x)**2.0
 
 def Log(x):
+    ''' Returns the value of the natural logarithm log base e ≈ 2.71828...
+     being euler's number. This function relies on the convergent power series
+     expansion for x>0:
+     log(x) = 2*( z + 1/3 z**3 + 1/5 z**5 +... ) where z = (x-1)/(x+1) to obtain
+     a good starting point estimate to use the Newton-Raphson method.
+     We also use the identies log(x) = log(e*x)-1.0 and log(x) = -log(1/x)
+     to reduce the domain of approximation to 1.0/e<=x<e.
+    '''
     if x<0:
         print ("x must be a postive real number.")
     elif x>finfo(float64).max:
@@ -60,16 +70,18 @@ def Log(x):
         z = (x-1.0)/(x+1.0)
         yold = z
         ynew = z**2
-        for n in range(5):
+        for n in xrange(5):
             z = ynew*(n+0.5)*z/(n+1.5)
             yold += z
         yold *= 2
         z = x/exp(yold) - 1.0
         ynew = yold + z
-        while abs(z) > 2*finfo(float64).eps:
+        numItr = 1
+        while abs(z) > 2*finfo(float64).eps and numItr <= 500:
             yold = ynew
             z = x/exp(yold) - 1.0
             ynew = yold + z
+            numItr += 1
         return ynew
     else:
         return -Log(1.0/x)
