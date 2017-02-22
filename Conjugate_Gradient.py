@@ -4,6 +4,24 @@ import matplotlib.pyplot as plt
 import seaborn as se
 
 def cg(A, b, x0=None, tol=1e-05, maxiter=None, M=None):
+    '''
+    Use Conjugate Gradient iteration to solve Ax = b
+    INPUT: A : Symmetric positive definite dense matrix
+           b : RHS vector
+    OUTPUT: x : solution to Ax = b
+            Error: Vector containing the Normwise Backward Error estimate at each iteration.
+    OTHER PARAMETERS: x0:, vector, Initial estimate of x.
+                      tol: float, Tolerance to achieve. The algorithm terminates
+                           when the Normwise Backward Error estimate is below tol or
+                           when the maximum number of iterations has been reached.
+                      maxiter: Maximum number of iterations. Iteration will stop
+                              after maxiter steps even if the specified
+                              tolerance has not been achieved.
+                     M: Preconditioner for A. The preconditioner should approximate
+                        the inverse of A. Effective preconditioning dramatically
+                        improves the rate of convergence, which implies that
+                        fewer iterations are needed to reach a given error tolerance.
+    '''
     try:
          np.linalg.cholesky(A)
          n,m = A.shape
@@ -61,10 +79,8 @@ def test_cg():
     n = 24
     np.random.seed(10)
     b = np.random.randn(n)
-    A = np.random.randn(n,n)+12*np.random.rand(n,n) -13*np.random.rand(n,n)
-    A = (A.T + A)/2.0
-    A = A.dot(A.T)+np.diag([1.0 for i in range(n)])
-    y = cg(copy(A),copy(b),M = np.diag(np.diag(A)),tol=1e-14,maxiter=300)
+    A = np.diag(5.*np.ones(n)) + np.diag(2.*np.ones(n-1),1) + np.diag(2.*np.ones(n-1),-1)+ np.diag(np.ones(n-2),2) + np.diag(np.ones(n-2),-2)
+    y = cg(copy(A),copy(b),M = np.diag(np.diagonal(A)),tol=1e-14,maxiter=300)
     z = cg(copy(A),copy(b),tol=1e-14,maxiter=300)
     se.plt.plot(xrange(1,len(y[1])+1),np.log10(y[1]),'-ro',label="Jacobi Preconditioned CG")
     se.plt.plot(xrange(1,len(z[1])+1),np.log10(z[1]),'--bs',label="CG")
@@ -76,5 +92,4 @@ def test_cg():
     se.plt.xticks(xrange(1,len(y[1])+1))
     se.plt.legend()
     se.plt.show()
-
 test_cg()
