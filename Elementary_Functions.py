@@ -6,7 +6,7 @@ Created on Sat Feb 11 16:18:38 2017
 @author: philippe
 """
 
-from numpy import exp,finfo,float64,e,Inf
+from numpy import exp,finfo,float64,e,Inf,array,log,linspace
 
 def Exp(x):
     ''' Returns the value of the exponential function e^x with e ≈ 2.71828...
@@ -35,7 +35,7 @@ def Exp(x):
         bn = 6.0
         error = 2.0*x*an/B2
         numItr = 1
-        while abs(error) > finfo(np.float64).eps and numItr <= 500:
+        while abs(error) > finfo(float64).eps and numItr <= 500:
             Atemp = bn * A2 + an * A1
             Btemp = bn * B2 + an * B1
             error *= an*B1/Btemp
@@ -85,3 +85,20 @@ def Log(x):
         return ynew
     else:
         return -Log(1.0/x)
+
+
+def Test_Exp():
+    Error = array([ abs((Exp(x)-exp(x))/exp(x)) for x in linspace(-709,709,100000) ])
+    if max(Error)<1e-12 and Exp(-800) == 0.0 and Exp(800) == Inf :
+        print("All test passed!")
+    else:
+        print("Test Failed")
+Test_Exp()
+
+def Test_Log():
+    Error = array([ abs((Log(x)-log(x))/log(x)) for x in linspace(1e-10,1e20,100000) ])
+    if max(Error)<1e-12 and Log(0.0) == -Inf and Log(1e600) == Inf :
+        print("All test passed!")
+    else:
+        print("Test Failed")
+Test_Log()

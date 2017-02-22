@@ -1,9 +1,55 @@
 import numpy as np
 from copy import copy, deepcopy
 
-def pcgm(A,b,x,tol):
+def cg(A, b, x0=None, tol=1e-05, maxiter=None, M=None):
+    if maxiter is None:
+        maxiter = len(b)
+    if x0 is None:
+        r = b
+        x0 = np.array([0.0]*len(b))
+    else:
+        r = b - MatMul(A,x0)
+    if M is None:
+        p = r
+        rsold = r.dot(r)
+        Error = []
+        Error.append(np.sqrt(rsold))
+        for i in xrange(maxiter):
+            Ap = MatMul(A,p)
+            alpha = rsold/(p.dot(Ap))
+            x0 += alpha*p
+            r -= alpha*Ap
+            rsnew = r.dot(r)
+            Error.append(np.sqrt(rsnew))
+            if Error[i+1] < tol:
+                break
+            p  = r + (rsnew/rsold) * p
+            rsold = rsnew
+        return x0 , Error
+    else:
+        z = solve(M,r)
+        p = z
+        rsold = r.dot(z)
+        Error = []
+        Error.append(np.linalg.norm(r))
+        for i in xrange(maxiter):
+            Ap = MatMul(A,p)
+            alpha = rsold/ p.dot(Ap)
+            x0 += alpha*p
+            r -= alpha*Ap
+            Error.append( np.linalg.norm(r) )
+            if Error[i+1] < tol:
+                break
+            z = solve(M,r)
+            rsnew = r.dot(z)
+            p = z + (rsnew/rsold)*p
+            rsold = rsnew
+        return x0, Error
+
+
+def pcgm(A,b,M,x,tol):
     r = b-MatMul(A,x)
-    z = solve(np.diag(np.diagonal(A)),r)
+    z = solve(M,r)
     p = z
     rsold = r.dot(z)
     Error = []
@@ -18,35 +64,38 @@ def pcgm(A,b,x,tol):
         Error.append(er)
         if er < tol:
             break
-        z = solve(np.diag(np.diagonal(A)),r)
+        z = solve(M,r)
         rsnew = r.dot(z)
         p = z + (rsnew/rsold)*p
         rsold = rsnew
-    return x,Error
+    return x , Error
 
 def cgm(A,b,x,tol):
     r = b-MatMul(A,x)
-    p = r
+    p = r[:]
     rsold = r.dot(r)
-    Error = []
+    delta_old = 0.0
+    gamma_old = 0.0
     for i in xrange(len(b)):
-        Error.append(np.sqrt(rsold))
-        Ap = A.dot(p)
-        alpha = rsold/(p.dot(Ap))
-        x += alpha*p
-        r -= alpha*Ap
+        Ap = MatMul(A,p)
+        gamma_new = rsold/(p.dot(Ap))
+        x += gamma*p
+        r -= gamma*Ap
         rsnew = r.dot(r)
-        if np.sqrt(rsnew)<tol:
-            break
-        p  = r + (rsnew/rsold) * p
+        delta_new = rsnew/rsold
+        p  = r + delta_new * p
+        alpha = 1.0/gamma_new + delta_old/gamma_old ????
+        beta2_old = delta_new/gamma_new**2
+        if k = 1:
+            c1 = 1.0
+            DELTA_old = alpha
+        else:
+            omega = np.sqrt((DELTA_old-alpha)**2+4*b)
+
         rsold = rsnew
     return x, Error
 
-def solve(M,r):
-    return np.linalg.solve(M,r)
 
-def MatMul(B,q):
-    return B.dot(q)
 
 def SOR(A,b,w = 1.0,NumIter=200,tol=np.finfo(np.float64).eps):
     n,m = A.shape
@@ -108,6 +157,9 @@ def SSOR(A,b,w = 1.0,NumIter=500,tol=np.finfo(np.float64).eps):
     return x, Error
 
 
+xsol = cg(A,b,x0 =np.zeros(n),M = np.diag(np.diag(A)))
+
+np.linalg.norm(A.dot(xsol[0])-b)
 
 np.random.seed(100)
 n = 100
@@ -115,7 +167,7 @@ b = np.random.rand(n)
 A = np.random.rand(n,n)
 A = (A + A.T)/2.0
 A = A.dot(A.T)+np.diag([1.0*n for i in range(len(b))])
-#M = np.diag(np.diag(A)**(-1))
+#
 x = np.zeros(n)
 #x
 x,Error1 = pcgm(A,b,x,1e-15)
