@@ -1,5 +1,5 @@
 import numpy as np
-
+from copy import copy, deepcopy
 def forward(A,b):
     try:
         n,m = A.shape
@@ -15,9 +15,8 @@ def forward(A,b):
     elif np.any(np.triu(A,k=1)) or np.any(np.diag(A)==0.0):
         print "Array must be lower triangular with nonzero diagonal elements"
         return
-    x = np.zeros(n)
+    x = copy(b)
     for i in xrange(n):
-        x[i] = b[i]
         for j in xrange(i):
             x[i] -= A[i,j]*x[j]
         x[i] /= A[i,i]
@@ -52,9 +51,8 @@ def back(A,b):
     elif np.any(np.tril(A,k=-1)) or np.any(np.diag(A)==0.0):
         print "Array must be upper triangular with nonzero diagonal elements"
         return
-    x = np.zeros(n)
+    x = copy(b)
     for i in reversed(xrange(n)):
-        x[i] = b[i]
         for j in xrange(i+1,n):
             x[i] -= A[i,j]*x[j]
         x[i] /= A[i,i]
