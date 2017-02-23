@@ -4,6 +4,10 @@ import warnings
 warnings.filterwarnings('error')
 
 def Cholesky(A):
+    '''
+    Cholesky(A) produces a lower triangular matrix L satisfying the equation L*L.T=A.
+    The chol function assumes that A is symmetric and positive definite.
+    '''
     try:
         n,m = A.shape
     except:
