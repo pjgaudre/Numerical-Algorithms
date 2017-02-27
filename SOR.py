@@ -34,23 +34,3 @@ def SOR(A,b,w = 1.0,NumIter=200,tol=np.finfo(np.float64).eps):
             break
         x0 = copy(x)
     return x, Error
-
-def test_SOR():
-    n = 24
-    np.random.seed(10)
-    b = np.random.randn(n)
-    A = np.diag(7.*np.ones(n)) + np.diag(2.*np.ones(n-1),1) + np.diag(2.*np.ones(n-1),-1)+ np.diag(np.ones(n-2),2) + np.diag(np.ones(n-2),-2)
-    y1 = SOR(A,b,w = 1.0,NumIter=200,tol=np.finfo(np.float64).eps)
-    y2 = SOR(A,b,w = 1.5,NumIter=200,tol=np.finfo(np.float64).eps)
-    y3 = SOR(A,b,w = 0.5,NumIter=200,tol=np.finfo(np.float64).eps)
-    se.plt.plot(xrange(1,len(y1[1])+1),np.log10(y1[1]),'--b',label="w=1.0")
-    se.plt.plot(xrange(1,len(y2[1])+1),np.log10(y2[1]),'--g',label="w=1.5")
-    se.plt.plot(xrange(1,len(y3[1])+1),np.log10(y3[1]),'--k',label="w=0.5")
-    se.plt.ylim([-16,1])
-    se.plt.ylabel("Log10 of Normwise Backward Error")
-    se.plt.xlabel("Number of Iterations")
-    se.plt.title("Error analysis of SOR method")
-    se.plt.legend()
-    se.plt.show()
-
-test_SOR()

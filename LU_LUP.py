@@ -53,25 +53,3 @@ def LUP(A):
             L[k,j] = U[k,j]/U[j,j]
             U[k,j:] = U[k,j:] - L[k,j]*U[j,j:]
     return L, U, P
-
-
-def GE_test():
-    n = 10
-    A = np.random.randn(n,n)
-    A = (A.T + A)/2.0
-    L,U = GE(A)
-    if np.linalg.norm(L.dot(U)-A,'fro') <1.e-14:
-        print "test passed"
-    else:
-        print "test failed"
-GE_test()
-
-def GEP_test():
-    n = 10
-    A = np.random.randn(n,n)
-    L,U,P = GEP(A)
-    if np.linalg.norm(L.dot(U)-A[P,:],'fro') <1.e-14:
-        print "test passed"
-    else:
-        print "test failed"
-GEP_test()

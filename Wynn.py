@@ -30,7 +30,7 @@ def Wynn(N,E,SOFN):
 
 def main(a):
     N = len(a)
-    S = 0 
+    S = 0
     Q = []
     for n in range(N):
         S += a[n]

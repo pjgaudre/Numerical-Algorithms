@@ -18,17 +18,3 @@ def Thomas(a,b,c,d):
     for i in xrange(n-2,-1,-1):
         x[i] = (d[i]-c[i]*x[i+1])/b[i]
     return x
-
-def Thomas_test():
-    n = 50
-    a = rand(n-1)
-    b = rand(n)
-    c = rand(n-1)
-    d = rand(n)
-    A = diag(a,-1) + diag(b) + diag(c,1)
-    Error = np.linalg.norm(Thomas(a, b, c, copy(d)) - np.linalg.solve(A,copy(d)))
-    if Error<=1e-10:
-        print "Test passed"
-    else:
-        print "Test failed"
-Thomas_test()

@@ -31,27 +31,3 @@ def Cholesky(A):
     except:
         print "LinAlgError: Matrix is not positive definite - Cholesky decomposition cannot be computed"
         return
-
-def Cholesky_test():
-    n=40
-    np.random.seed(10)
-    # Two dimensional test
-    A = np.random.rand(n)
-    L = Cholesky(copy(A))
-    # Non square matrix case
-    A = np.random.rand(n,n+1)
-    L = Cholesky(copy(A))
-    # Non symmetric case
-    A = np.random.rand(n,n)
-    L = Cholesky(copy(A))
-    # When it works, does it converge?
-    A = A.dot(A.T)
-    L = Cholesky(copy(A))
-    if np.linalg.norm(L.dot(L.T)-A)<=1e-10:
-        print "Test passed"
-    else:
-        print "test failed"
-    # Matrix is not positive definite
-    A = A - np.diag([10.0]*n)
-    L = Cholesky(copy(A))
-Cholesky_test()

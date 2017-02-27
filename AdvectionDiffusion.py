@@ -78,11 +78,3 @@ def AdvectionDiffusion(N,M,Pe,T=1.0,L=1.0,Plot=False):
             interval=k, blit=True)
         plt.show()
     return u
-
-def AdvectionDiffusion_test():
-    Pe = 0.1
-    M = 30000
-    L = 2.0
-    T = 3.0
-    N = int(np.ceil(np.sqrt(Pe*M/3./T)*L))
-    U = AdvectionDiffusion(N,M,Pe=Pe,T=T,L=L,Plot=True)

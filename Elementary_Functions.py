@@ -85,20 +85,3 @@ def Log(x):
         return ynew
     else:
         return -Log(1.0/x)
-
-
-def Test_Exp():
-    Error = array([ abs((Exp(x)-exp(x))/exp(x)) for x in linspace(-709,709,100000) ])
-    if max(Error)<1e-12 and Exp(-800) == 0.0 and Exp(800) == Inf :
-        print("All test passed!")
-    else:
-        print("Test Failed")
-Test_Exp()
-
-def Test_Log():
-    Error = array([ abs((Log(x)-log(x))/log(x)) for x in linspace(1e-10,1e20,100000) ])
-    if max(Error)<1e-12 and Log(0.0) == -Inf and Log(1e600) == Inf :
-        print("All test passed!")
-    else:
-        print("Test Failed")
-Test_Log()

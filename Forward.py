@@ -29,18 +29,6 @@ def forward(L,b):
         x[i] /= L[i,i]
     return x
 
-def forward_test():
-    np.random.seed(3)
-    n=10
-    A = np.random.randn(n,n)
-    A = A - np.triu(A,k=1) + n*np.diag(np.random.randn(n))
-    b = np.random.rand(n)
-    xstar = forward(A,b)
-    Error = np.linalg.norm(A.dot(xstar)-b)/np.linalg.norm(b)
-    if Error <=1e-10:
-        print "Test passed"
-    else:
-        print "test failed"
 
 
 def back(U,b):
@@ -71,18 +59,3 @@ def back(U,b):
             x[i] -= U[i,j]*x[j]
         x[i] /= U[i,i]
     return x
-
-def back_test():
-    np.random.seed(3)
-    n=10
-    A = np.random.randn(n,n)
-    A = A - np.tril(A,k=-1) + n*np.diag(np.random.randn(n))
-    b = np.random.rand(n)
-    xstar = back(A,b)
-    Error = np.linalg.norm(A.dot(xstar)-b)/np.linalg.norm(b)
-    if Error <=1e-10:
-        print "Test passed"
-    else:
-        print "test failed"
-
-back_test()
