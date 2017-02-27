@@ -3,14 +3,22 @@ import scipy.sparse.linalg as spl
 from copy import copy
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-
+import numpy as np
 def Heat():
     '''
     The following function solves the homogenous Heat equation associated
-    with Dirichlet and Neuman boundary conditions on a grid of N by N points using the
-    method of finite differences. The resulting linear system is then solved
-    using a preconditioned congugate gradient method.
+    with Dirichlet and Neuman boundary conditions:
+    u_t(x,y,t) = u_xx(x,y,t) + u_yy(x,y,t) , (x,y) in [0,1] x [0,1], t>0
+    u(x,0,t) = 1.0  ,      u(x,1,t) = 0.0 ,    u_x(0,y,t) = u_x(1,y,t) = 0.0  t>0
+    u(x,y,0) = 0.0 , (x,y) in (0,1) x (0,1),
+    on a grid of N by N points using the method of finite differences:
+    This is aconsistent scheme for approximation of the solution of this problem
+    (called the theta-method)
+    delta_{h}^{-1} u_{h,n} = theta * nabla_{h}^2 u_{h}^{n+1} +(1-theta) * nabla_{h}^2 u_{h}^{n}
+    0<=theta<=1
 
+    The resulting linear system is then solved using a Jacobi preconditioned sparse congugate gradient method.
+    For theta = 0.5, the approximation is second order in both space and time.
     '''
     N=20
     k=0.01
@@ -39,22 +47,26 @@ def Heat():
         c[i*(N-1)] = GAMMA
 
     fig = plt.figure()
+    plt.title("Solution to heat equation")
+    plt.xlabel("x")
+    plt.ylabel("y")
     uold = np.zeros(Anew.shape[0])
     U = np.vstack((np.ones(N+1),np.reshape(uold, (N-1,N+1) ,order='F'),np.zeros(N+1)))
     ims = []
-    im = plt.imshow(U, cmap='hot', interpolation='nearest', animated=True)
+    im = plt.imshow(U, cmap='hot', interpolation='nearest',extent=(0.0,1.0,0.0,1.0), animated=True)
+    plt.colorbar()
     ims.append([im])
     while True:
         unew = spl.cg(Anew,Aold.dot(uold[:]) + c, M = np.diag([bnew]*(N-1)*(N+1)),tol=tol)
         U = np.vstack((np.ones(N+1),np.reshape(unew[0], (N-1,N+1) ,order='F'),np.zeros(N+1)))
-        im = plt.imshow(U, cmap='hot', interpolation='nearest', animated=True)
+        im = plt.imshow(U, cmap='hot', interpolation='nearest',extent=(0.0,1.0,0.0,1.0), animated=True)
+        #plt.colorbar()
         ims.append([im])
         if np.linalg.norm(unew[0]-uold,np.Inf)/np.linalg.norm(unew[0],np.Inf)<tol:
             break
         uold = copy(unew[0])
-    ani = animation.ArtistAnimation(fig, ims, interval=1, blit=True, repeat_delay=1000)
+    ani = animation.ArtistAnimation(fig, ims, interval=50, blit=True, repeat_delay=1000)
     ani.save('Heat.mp4')
-    plt.show()
     return U
 
 Heat()
